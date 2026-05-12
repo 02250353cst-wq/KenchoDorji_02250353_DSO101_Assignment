@@ -8,7 +8,7 @@ Repository](https://github.com/02250353cst-wq/KenchoDorji_02250353_DSO101_A1)
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 todo-app/
@@ -31,7 +31,7 @@ todo-app/
 
 ---
 
-## ⚙️ Tech Stack
+## Tech Stack
 
 | Layer    | Technology              |
 |----------|-------------------------|
@@ -42,7 +42,7 @@ todo-app/
 
 ---
 
-## 🚀 Step 0 — Run Locally
+## Step 0 — Run Locally
 
 ### Prerequisites
 - [Node.js 18+](https://nodejs.org)
@@ -103,11 +103,11 @@ cd ../frontend
 # OR use VS Code Live Server extension
 ```
 
-> ⚠️ The frontend reads `API_URL` from `window._env_.API_URL`. Locally it falls back to `http://localhost:5000` automatically.
+> The frontend reads `API_URL` from `window._env_.API_URL`. Locally it falls back to `http://localhost:5000` automatically.
 
 ---
 
-## 🐳 Part A — Build & Push Docker Images to Docker Hub
+## Part A — Build & Push Docker Images to Docker Hub
 
 ### 1. Create a Docker Hub account
 Go to https://hub.docker.com and sign up. Note your Docker Hub username.
@@ -188,7 +188,7 @@ Verify your images appear at:
 
 ---
 
-## 🔄 Part B — Automated Build & Deploy from GitHub
+## Part B — Automated Build & Deploy from GitHub
 
 This removes manual Docker Hub steps — Render **automatically builds and deploys** on every `git push`.
 
@@ -202,7 +202,7 @@ git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
 git push -u origin main
 ```
 
-> ⚠️ Make sure `.env` files are in `.gitignore` and NOT committed!
+> Make sure `.env` files are in `.gitignore` and NOT committed!
 
 ### 2. Connect GitHub to Render via Blueprint
 
@@ -226,7 +226,7 @@ Watch Render automatically rebuild and redeploy both services! 🎉
 
 ---
 
-## 🔗 API Endpoints
+## API Endpoints
 
 | Method | Endpoint                  | Description           |
 |--------|---------------------------|-----------------------|
@@ -239,10 +239,3 @@ Watch Render automatically rebuild and redeploy both services! 🎉
 | GET    | `/health`                 | Health check          |
 
 ---
-
-## 📌 Important Notes
-
-- **Never commit `.env` files** — they are in `.gitignore`
-- Use `.env.example` as a template — copy it to `.env` locally
-- Your Docker image tag must be your **student ID**
-- Document every step with **screenshots** in this README
