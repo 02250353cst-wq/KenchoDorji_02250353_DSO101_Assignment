@@ -68,9 +68,9 @@ cp .env.example .env
 
 Edit `.env`:
 ```env
-DB_HOST=localhost
+DB_HOST=dpg-d7tmtf9o3t8c739m6c80-a
 DB_USER=postgres
-DB_PASSWORD=yourpassword
+DB_PASSWORD=fUWQB7cIk9ILagKc1fpqNkKwiyGhw19AP
 DB_NAME=tododb
 DB_PORT=5432
 PORT=5000
@@ -114,7 +114,7 @@ Go to https://hub.docker.com and sign up. Note your Docker Hub username.
 ### 2. Login to Docker Hub
 ```bash
 docker login
-<IMAGE href='/docker_login.png'>
+![login](image.png)
 
 ### 3. Build & Push Backend Image
 > Replace `yourdockerhub` with your Docker Hub username and `YOURSTUDENTID` with your actual student ID.
@@ -139,8 +139,7 @@ docker build -t yourdockerhub/fe-todo:YOURSTUDENTID .
 
 # Push to Docker Hub
 docker push yourdockerhub/fe-todo:YOURSTUDENTID
-<IMAGE href='/fe_pushed'>
-
+![fe-pushed](image-2.png)
 ### 5. Deploy on Render.com (Part A — Manual Docker Image)
 
 #### Database
