@@ -2,7 +2,7 @@
 FROM node:18-alpine
 
 # 2. Create the app directory
-WORKDIR /app
+WORKDIR /todo-app
 
 # 3. Copy package files 
 # Make sure package.json is actually INSIDE the todo-app/backend folder
