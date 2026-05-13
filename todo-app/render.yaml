@@ -29,4 +29,4 @@ services:
     dockerfilePath: todo-app/frontend/Dockerfile
     envVars:
       - key: API_URL
-        value: https://be-todo-02250353-1.onrender.com
+        value:  https://be-todo-p95q.onrender.com
