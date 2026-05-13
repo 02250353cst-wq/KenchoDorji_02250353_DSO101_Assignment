@@ -1,22 +1,23 @@
-# 1. Use the node image
+# 1. Use the lightweight node image
 FROM node:18-alpine
 
-# 2. Create the app directory
-WORKDIR /todo-app
+# 2. Set the internal container folder
+WORKDIR /app
 
-# 3. Copy package files 
-# Make sure package.json is actually INSIDE the todo-app/backend folder
-COPY package*.json ./
-# If you don't have a lock file, don't worry about copying it
+# 3. Copy the package files
+# Note: Since the context is already 'todo-app/backend', 
+# this looks for the file directly in that folder.
+COPY package.json ./
+COPY package-lock.json ./
 
 # 4. Install dependencies
 RUN npm install --omit=dev
 
-# 5. Copy the rest of your backend code
+# 5. Copy the rest of the backend files
 COPY . .
 
-# 6. Expose the port your app runs on
+# 6. Your app runs on 5000
 EXPOSE 5000
 
-# 7. Start the app
+# 7. Start the server
 CMD ["node", "index.js"]
