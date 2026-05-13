@@ -4,7 +4,7 @@ services:
     name: be-todo
     env: docker
     plan: free
-    dockerfilePath: .todo-app/backend/Dockerfile
+    dockerfilePath: ./todo-app/backend/Dockerfile
     envVars:
       - key: DB_HOST
         value: your-render-db-host
@@ -24,7 +24,7 @@ services:
     name: fe-todo
     env: docker
     plan: free
-    dockerfilePath: .todo-app/frontend/Dockerfile
+    dockerfilePath: ./todo-app/frontend/Dockerfile
     envVars:
       - key: API_URL
         value: https://be-todo.onrender.com
