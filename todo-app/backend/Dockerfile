@@ -1,21 +1,22 @@
+# 1. Use the node image
 FROM node:18-alpine
 
-# Set the environment to production
-ENV NODE_ENV=production
-
+# 2. Create the app directory
 WORKDIR /app
 
-# Copy package files first to leverage Docker cache
+# 3. Copy package files 
+# Make sure package.json is actually INSIDE the todo-app/backend folder
 COPY package*.json ./
+# If you don't have a lock file, don't worry about copying it
 
-# Install only production dependencies
-RUN npm install --only=production
-# Copy the rest of the code
-# (Ensure you have a .dockerignore file to skip node_modules and .env)
+# 4. Install dependencies
+RUN npm install --omit=dev
+
+# 5. Copy the rest of your backend code
 COPY . .
 
-# Render will provide the PORT env var at runtime. 
-# Your server.js must use: const PORT = process.env.PORT || 10000;
-EXPOSE 10000
+# 6. Expose the port your app runs on
+EXPOSE 5000
 
-CMD ["node", "server.js"]
+# 7. Start the app
+CMD ["node", "index.js"]
