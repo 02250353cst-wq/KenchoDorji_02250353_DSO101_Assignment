@@ -9,8 +9,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install only production dependencies
-RUN npm ci --only=production
-
+RUN npm install --only=production
 # Copy the rest of the code
 # (Ensure you have a .dockerignore file to skip node_modules and .env)
 COPY . .
