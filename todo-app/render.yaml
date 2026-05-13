@@ -7,6 +7,16 @@ services:
     dockerContext: todo-app/backend
     dockerfilePath: todo-app/backend/Dockerfile
     envVars:
+      - key: DB_HOST
+        value: dpg-d7tmtf9o3t8c739m6c80-a
+      - key: DB_USER
+        value: todo_db_57d9_user
+      - key: DB_PASSWORD
+        value: UWQB7cIk9ILagKc1fpqNkKwiyGhw19AP
+      - key: DB_NAME
+        value: todo_db_57d9
+      - key: DB_PORT
+        value: 54321
       - key: PORT
         value: 5000
 
@@ -19,4 +29,4 @@ services:
     dockerfilePath: todo-app/frontend/Dockerfile
     envVars:
       - key: API_URL
-        value: https://be-todo.onrender.com
+        value: https://be-todo-02250353-1.onrender.com
