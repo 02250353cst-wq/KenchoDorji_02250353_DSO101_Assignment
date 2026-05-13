@@ -217,27 +217,7 @@ git add .
 git commit -m "Test auto-deploy"
 git push
 ```
-Watch Render automatically rebuild and redeploy both services! 🎉
+Render automatically rebuild and redeploy both services! 
 
 ---
 
-## API Endpoints
-
-| Method | Endpoint                  | Description           |
-|--------|---------------------------|-----------------------|
-| GET    | `/api/todos`              | Get all todos         |
-| GET    | `/api/todos/:id`          | Get single todo       |
-| POST   | `/api/todos`              | Create todo           |
-| PUT    | `/api/todos/:id`          | Update todo           |
-| PATCH  | `/api/todos/:id/toggle`   | Toggle completed      |
-| DELETE | `/api/todos/:id`          | Delete todo           |
-| GET    | `/health`                 | Health check          |
-
----
-
-##  Important Notes
-
-- **Never commit `.env` files** — they are in `.gitignore`
-- Use `.env.example` as a template — copy it to `.env` locally
-- Your Docker image tag must be your **student ID**
-- Document every step with **screenshots** in this README
