@@ -68,9 +68,9 @@ cp .env.example .env
 
 Edit `.env`:
 ```env
-DB_HOST=localhost
+DB_HOST=dpg-d7tmtf9o3t8c739m6c80-a
 DB_USER=postgres
-DB_PASSWORD=yourpassword
+DB_PASSWORD=fUWQB7cIk9ILagKc1fpqNkKwiyGhw19AP
 DB_NAME=tododb
 DB_PORT=5432
 PORT=5000
@@ -86,8 +86,7 @@ psql -U postgres -c "CREATE DATABASE tododb;"
 Start the backend:
 ```bash
 npm start
-# Server running on port 5000
-```
+![backend](image.png)
 
 Test the API:
 ```bash
@@ -115,8 +114,7 @@ Go to https://hub.docker.com and sign up. Note your Docker Hub username.
 ### 2. Login to Docker Hub
 ```bash
 docker login
-# Enter your Docker Hub username and password
-```
+![login](image.png)
 
 ### 3. Build & Push Backend Image
 > Replace `yourdockerhub` with your Docker Hub username and `YOURSTUDENTID` with your actual student ID.
@@ -126,10 +124,11 @@ cd backend
 
 # Build image
 docker build -t yourdockerhub/be-todo:YOURSTUDENTID .
+<IMAGE href='/built_be.png'>
 
 # Push to Docker Hub
-docker push yourdockerhub/be-todo:YOURSTUDENTID
-```
+docker push yourdockerhub/be-todo:YOURSTUDENTID.
+
 
 ### 4. Build & Push Frontend Image
 ```bash
@@ -140,14 +139,7 @@ docker build -t yourdockerhub/fe-todo:YOURSTUDENTID .
 
 # Push to Docker Hub
 docker push yourdockerhub/fe-todo:YOURSTUDENTID
-```
-
-Verify your images appear at:
-- `https://hub.docker.com/r/yourdockerhub/be-todo`
-- `https://hub.docker.com/r/yourdockerhub/fe-todo`
-
----
-
+![fe-pushed](image-2.png)
 ### 5. Deploy on Render.com (Part A — Manual Docker Image)
 
 #### Database
@@ -158,33 +150,34 @@ Verify your images appear at:
 #### Backend Service
 1. **New → Web Service**
 2. Select **"Deploy an existing image from a registry"**
-3. Image URL: `docker.io/yourdockerhub/be-todo:YOURSTUDENTID`
+3. Image URL: `docker.io/kenchodorji123/be-todo:02250353`
 4. Under **Environment Variables**, add:
 
-| Key           | Value                           |
-|---------------|---------------------------------|
-| `DB_HOST`     | (from Render PostgreSQL dashboard) |
-| `DB_USER`     | (from Render PostgreSQL dashboard) |
-| `DB_PASSWORD` | (from Render PostgreSQL dashboard) |
-| `DB_NAME`     | `tododb`                        |
-| `DB_PORT`     | `5432`                          |
-| `PORT`        | `5000`                          |
-| `NODE_ENV`    | `production`                    |
+| Key           | Value                               |
+|---------------|-------------------------------------|
+| `DB_HOST`     | (dpg-d7tmtf9o3t8c739m6c80-a)        |
+| `DB_USER`     | (todo_db_57d9_user)                 |
+| `DB_PASSWORD` | (fUWQB7cIk9ILagKc1fpqNkKwiyGhw19AP) |
+| `DB_NAME`     | `tododb`                            |
+| `DB_PORT`     | `5432`                              |
+| `PORT`        | `5000`                              |
+| `NODE_ENV`    | `production`                        |
 
 5. Click **Create Web Service**
-6. Copy the deployed URL e.g. `https://be-todo.onrender.com`
+6. Copy the deployed URL `https://be-todo-02250353-1.onrender.com`
 
 #### Frontend Service
 1. **New → Web Service**
 2. Select **"Deploy an existing image from a registry"**
-3. Image URL: `docker.io/yourdockerhub/fe-todo:YOURSTUDENTID`
+3. Image URL: `docker.io/kenchodorji123/fe-todo:02250353`
 4. Environment Variables:
 
 | Key       | Value                             |
 |-----------|-----------------------------------|
-| `API_URL` | `https://be-todo.onrender.com`    |
+| `PORT` | `80`    |
 
 5. Click **Create Web Service**
+
 
 ---
 
@@ -209,6 +202,7 @@ git push -u origin main
 1. Go to https://render.com → **New → Blueprint**
 2. Connect your GitHub account
 3. Select your repository
+![blueprint](image-1.png)
 4. Render will detect the `render.yaml` file automatically
 5. Click **Apply** — Render creates all services and the database
 
@@ -222,27 +216,7 @@ git add .
 git commit -m "Test auto-deploy"
 git push
 ```
-Watch Render automatically rebuild and redeploy both services! 🎉
+Render automatically rebuild and redeploy both services! 
 
 ---
 
-## API Endpoints
-
-| Method | Endpoint                  | Description           |
-|--------|---------------------------|-----------------------|
-| GET    | `/api/todos`              | Get all todos         |
-| GET    | `/api/todos/:id`          | Get single todo       |
-| POST   | `/api/todos`              | Create todo           |
-| PUT    | `/api/todos/:id`          | Update todo           |
-| PATCH  | `/api/todos/:id/toggle`   | Toggle completed      |
-| DELETE | `/api/todos/:id`          | Delete todo           |
-| GET    | `/health`                 | Health check          |
-
----
-
-##  Important Notes
-
-- **Never commit `.env` files** — they are in `.gitignore`
-- Use `.env.example` as a template — copy it to `.env` locally
-- Your Docker image tag must be your **student ID**
-- Document every step with **screenshots** in this README
