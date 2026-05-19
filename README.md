@@ -218,5 +218,199 @@ git push
 ```
 Render automatically rebuild and redeploy both services! 
 
+##### -------------------------------------------------------------------------------------------- #####
+
+# TodoFlow — DSO101 Assignment 3
+**Course:** DSO101 — Continuous Integration and Continuous Deployment
+
 ---
 
+## Project Overview
+
+A full-stack To-Do List web application with automated CI/CD pipeline using GitHub Actions.
+
+- **Frontend:** HTML + Tailwind CSS, served via nginx
+- **Backend:** Node.js + Express REST API
+- **Database:** PostgreSQL (via Render)
+- **CI/CD:** GitHub Actions → DockerHub → Render.com
+
+---
+
+## Project Structure
+
+```
+todo-app/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml       ← GitHub Actions CI/CD pipeline
+├── .gitignore
+├── render.yaml
+├── README.md
+├── frontend/
+│   ├── Dockerfile
+│   ├── nginx.conf
+│   └── index.html
+└── backend/
+    ├── Dockerfile
+    ├── server.js
+    ├── package.json
+    ├── .env
+    └── __tests__/
+        └── app.test.js      ← Jest tests
+```
+
+---
+
+## CI/CD Pipeline
+
+Every time code is pushed to the `main` branch, GitHub Actions automatically:
+
+```
+Push to GitHub
+      ↓
+GitHub Actions triggered
+      ↓
+Login to DockerHub
+      ↓
+Build Backend Image → Push to DockerHub
+Build Frontend Image → Push to DockerHub
+      ↓
+Trigger Render Backend Webhook → Redeploy
+Trigger Render Frontend Webhook → Redeploy
+```
+
+---
+
+## Task 1 — GitHub Repository Setup
+
+### package.json scripts
+```json
+"scripts": {
+  "start": "node server.js",
+  "dev": "nodemon server.js",
+  "test": "jest --forceExit --detectOpenHandles"
+}
+```
+---
+
+## Task 2 — Docker Setup
+
+### Backend Dockerfile
+```dockerfile
+FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm test
+EXPOSE 10000
+CMD ["npm", "start"]
+
+```
+
+### Testing locally with Docker
+```bash
+# Build and run backend
+cd backend
+docker build -t kenchodorji123/be-todo:02250353 .
+docker run -p 10000:10000 kenchodorji123/be-todo:02250353
+
+# Build and run frontend
+cd ../frontend
+docker build -t kenchodorji123/fe-todo:02250353 .
+docker run -p 80:80 kenchodorji123/fe-todo:02250353
+```
+
+---
+
+## Task 3 — GitHub Actions Workflow
+
+### File: `.github/workflows/deploy.yml`
+
+The workflow does 6 steps on every push to `main`:
+1. Checkout the repository code
+2. Login to DockerHub using secrets
+3. Build and push backend image
+4. Build and push frontend image
+5. Trigger Render backend webhook to redeploy
+6. Trigger Render frontend webhook to redeploy
+
+### GitHub Secrets Required
+
+Go to your GitHub repo → **Settings → Secrets and variables → Actions → New repository secret** and add:
+
+| Secret Name | Value |
+|-------------|-------|
+| `DOCKERHUB_USERNAME` | `kenchodorji123` |
+| `YOUR_DOCKERHUB_TOKEN` | docker login -u username -p YOUR_DOCKER_TOKEN |
+| `RENDER_BACKEND_WEBHOOK` |From Render backend service → Settings → Deploy Hook | 
+| `RENDER_FRONTEND_WEBHOOK`|From Render frontend service → Settings → Deploy Hook | 
+
+### How to get a DockerHub Token:
+1. Go to [hub.docker.com](https://hub.docker.com)
+2. Account Settings → Security → New Access Token
+3. Copy the token and save it as `DOCKERHUB_TOKEN` secret
+
+### How to get a Render Webhook URL:
+1. Go to [render.com](https://render.com)
+2. Click your service → **Settings**
+3. Scroll down to **Deploy Hook**
+4. Copy the URL and save as `RENDER_BACKEND_WEBHOOK` or `RENDER_FRONTEND_WEBHOOK`
+![SECRETS](<Screenshot 2026-05-13 223545.png>)
+
+---
+
+## Task 4 — Render Deployment
+
+### Environment Variables on Render
+
+**Backend Service:**
+
+| Key | Value |
+|-----|-------|
+| `DB_HOST` | from Render DB dashboard |
+| `DB_USER` | from Render DB dashboard |
+| `DB_PASSWORD` | from Render DB dashboard |
+| `DB_NAME` | `todo_db` |
+| `DB_PORT` | `5432` |
+| `DB_SSL` | `true` |
+| `PORT` | `10000` |
+
+**Frontend Service:**
+
+| Key | Value |
+|-----|-------|
+| `API_URL` | `https://be-todo.onrender.com` |
+
+> **Screenshot:** *(Add screenshot of Render deployment here)*
+
+### Live Deployment Link
+🔗 **Frontend:** [https://fe-todo-02250353.onrender.com](https://fe-todo-g7r9.onrender.com)
+🔗 **Backend:** [https://be-todo-02250353-1.onrender.com](https://be-todo-p95q.onrender.com)
+
+---
+
+
+---
+
+## Challenges Faced
+
+- Render does not auto-redeploy when a new Docker image is pushed to DockerHub — solved by using Render's Deploy Webhook in the GitHub Actions workflow
+- PostgreSQL SSL connection required setting `DB_SSL=true` on Render
+- Port mismatch — Render requires port `10000`, not `5000`
+
+## Learning Outcomes
+
+- How to set up a full CI/CD pipeline using GitHub Actions
+- How to securely manage credentials using GitHub Secrets
+- How to build and push multi-service Docker images automatically
+- How to trigger cloud deployments via webhooks
+- How to write basic API tests using Jest and Supertest
+
+---
+
+## Resources
+- [GitHub Actions Documentation](https://docs.github.com/en/actions)
+- [Docker Documentation](https://docs.docker.com/)
+- [Render Deploy Hooks](https://render.com/docs/deploy-hooks)
+- [Render Blueprint Spec](https://render.com/docs/blueprint-spec)

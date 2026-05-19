@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="10" failures="0" errors="0" time="1.104">
+  <testsuite name="GET /" errors="0" failures="0" skipped="0" timestamp="2026-05-19T06:31:52" time="1.012" tests="10">
+    <testcase classname="GET / Health check returns ok" name="GET / Health check returns ok" time="0.128">
+    </testcase>
+    <testcase classname="GET /tasks Returns all tasks" name="GET /tasks Returns all tasks" time="0.011">
+    </testcase>
+    <testcase classname="GET /tasks/:id Returns a single task by id" name="GET /tasks/:id Returns a single task by id" time="0.01">
+    </testcase>
+    <testcase classname="GET /tasks/:id Returns 404 for non-existent task" name="GET /tasks/:id Returns 404 for non-existent task" time="0.011">
+    </testcase>
+    <testcase classname="POST /tasks Creates a new task" name="POST /tasks Creates a new task" time="0.033">
+    </testcase>
+    <testcase classname="POST /tasks Returns 400 if title is missing" name="POST /tasks Returns 400 if title is missing" time="0.015">
+    </testcase>
+    <testcase classname="PUT /tasks/:id Updates a task" name="PUT /tasks/:id Updates a task" time="0.011">
+    </testcase>
+    <testcase classname="PUT /tasks/:id Returns 404 for non-existent task" name="PUT /tasks/:id Returns 404 for non-existent task" time="0.011">
+    </testcase>
+    <testcase classname="DELETE /tasks/:id Deletes a task" name="DELETE /tasks/:id Deletes a task" time="0.015">
+    </testcase>
+    <testcase classname="DELETE /tasks/:id Returns 404 for non-existent task" name="DELETE /tasks/:id Returns 404 for non-existent task" time="0.022">
+    </testcase>
+  </testsuite>
+</testsuites>
