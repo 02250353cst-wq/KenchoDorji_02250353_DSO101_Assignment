@@ -43,7 +43,7 @@ pipeline {
                             npm install
                         }
                         else {
-                            Write-Host "No package.json found, skipping..."
+                            Write-Host "No package.json found."
                         }
                     '''
                 }
@@ -70,15 +70,13 @@ pipeline {
         stage('🐳 Build Backend Image') {
             steps {
                 dir('todo-app/backend') {
-                    powershell '''
-                        Write-Host "Building backend Docker image..."
+                    powershell """
+                        Write-Host 'Building backend Docker image...'
 
-                        docker build -t $env:DOCKER_IMAGE_BACKEND:$env:DOCKER_TAG .
+                        docker build -t ${DOCKER_IMAGE_BACKEND}:${DOCKER_TAG} .
 
-                        docker tag `
-                            $env:DOCKER_IMAGE_BACKEND:$env:DOCKER_TAG `
-                            $env:DOCKER_IMAGE_BACKEND:latest
-                    '''
+                        docker tag ${DOCKER_IMAGE_BACKEND}:${DOCKER_TAG} ${DOCKER_IMAGE_BACKEND}:latest
+                    """
                 }
             }
         }
@@ -86,15 +84,13 @@ pipeline {
         stage('🐳 Build Frontend Image') {
             steps {
                 dir('todo-app/frontend') {
-                    powershell '''
-                        Write-Host "Building frontend Docker image..."
+                    powershell """
+                        Write-Host 'Building frontend Docker image...'
 
-                        docker build -t $env:DOCKER_IMAGE_FRONTEND:$env:DOCKER_TAG .
+                        docker build -t ${DOCKER_IMAGE_FRONTEND}:${DOCKER_TAG} .
 
-                        docker tag `
-                            $env:DOCKER_IMAGE_FRONTEND:$env:DOCKER_TAG `
-                            $env:DOCKER_IMAGE_FRONTEND:latest
-                    '''
+                        docker tag ${DOCKER_IMAGE_FRONTEND}:${DOCKER_TAG} ${DOCKER_IMAGE_FRONTEND}:latest
+                    """
                 }
             }
         }
@@ -110,28 +106,25 @@ pipeline {
                     )
                 ]) {
 
-                    powershell '''
-                        Write-Host "Logging into Docker Hub..."
+                    powershell """
+                        Write-Host 'Logging into Docker Hub...'
 
-                        $env:DOCKER_PASS | docker login `
-                            -u $env:DOCKER_USER `
-                            --password-stdin
+                        echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin
 
-                        Write-Host "Pushing backend images..."
+                        Write-Host 'Pushing backend images...'
 
-                        docker push $env:DOCKER_IMAGE_BACKEND:$env:DOCKER_TAG
-                        docker push $env:DOCKER_IMAGE_BACKEND:latest
+                        docker push ${DOCKER_IMAGE_BACKEND}:${DOCKER_TAG}
+                        docker push ${DOCKER_IMAGE_BACKEND}:latest
 
-                        Write-Host "Pushing frontend images..."
+                        Write-Host 'Pushing frontend images...'
 
-                        docker push $env:DOCKER_IMAGE_FRONTEND:$env:DOCKER_TAG
-                        docker push $env:DOCKER_IMAGE_FRONTEND:latest
+                        docker push ${DOCKER_IMAGE_FRONTEND}:${DOCKER_TAG}
+                        docker push ${DOCKER_IMAGE_FRONTEND}:latest
 
-                        Write-Host "Logging out from Docker Hub..."
                         docker logout
 
-                        Write-Host "All Docker images pushed successfully!"
-                    '''
+                        Write-Host 'All Docker images pushed successfully!'
+                    """
                 }
             }
         }
@@ -145,10 +138,6 @@ pipeline {
 
         failure {
             echo '❌ Pipeline failed!'
-        }
-
-        always {
-            cleanWs()
         }
     }
 }
