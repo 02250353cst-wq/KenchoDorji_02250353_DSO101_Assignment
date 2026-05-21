@@ -335,17 +335,6 @@ The workflow does 6 steps on every push to `main`:
 5. Trigger Render backend webhook to redeploy
 6. Trigger Render frontend webhook to redeploy
 
-### GitHub Secrets Required
-
-Go to your GitHub repo → **Settings → Secrets and variables → Actions → New repository secret** and add:
-
-| Secret Name | Value |
-|-------------|-------|
-| `DOCKERHUB_USERNAME` | `kenchodorji123` |
-| `YOUR_DOCKERHUB_TOKEN` | docker login -u username -p YOUR_DOCKER_TOKEN |
-| `RENDER_BACKEND_WEBHOOK` |From Render backend service → Settings → Deploy Hook | 
-| `RENDER_FRONTEND_WEBHOOK`|From Render frontend service → Settings → Deploy Hook | 
-
 ### How to get a DockerHub Token:
 1. Go to [hub.docker.com](https://hub.docker.com)
 2. Account Settings → Security → New Access Token

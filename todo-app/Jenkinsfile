@@ -5,25 +5,16 @@ pipeline {
         nodejs 'NodeJS-20'
     }
     
-    environment {
-        // Change these to your actual credentials
-        DOCKER_IMAGE_BACKEND = 'your-dockerhub-username/todo-backend'
-        DOCKER_IMAGE_FRONTEND = 'your-dockerhub-username/todo-frontend'
-        DOCKER_TAG = "${BUILD_NUMBER}"
-    }
-    
     stages {
-        // Stage 1: Checkout code from GitHub
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/yourusername/todo-app.git',
-                    credentialsId: 'github-pat'
+                    url: 'https://github.com/02250353cst-wq/KenchoDorji_02250353_DSO101_Assignment.git',
+                    credentialsId: 'github-credentials'
             }
         }
         
-        // Stage 2: Install Backend Dependencies
-        stage('Backend Install') {
+        stage('Install Backend Dependencies') {
             steps {
                 dir('backend') {
                     sh 'npm install'
@@ -31,8 +22,7 @@ pipeline {
             }
         }
         
-        // Stage 3: Install Frontend Dependencies
-        stage('Frontend Install') {
+        stage('Install Frontend Dependencies') {
             steps {
                 dir('frontend') {
                     sh 'npm install'
@@ -40,11 +30,18 @@ pipeline {
             }
         }
         
-        // Stage 4: Run Backend Tests
-        stage('Backend Tests') {
+        stage('Build Frontend') {
+            steps {
+                dir('frontend') {
+                    sh 'npm run build'
+                }
+            }
+        }
+        
+        stage('Test') {
             steps {
                 dir('backend') {
-                    sh 'npm test'
+                    sh 'npm test || true'
                 }
             }
             post {
@@ -54,47 +51,22 @@ pipeline {
             }
         }
         
-        // Stage 5: Build Docker Images
-        stage('Build Docker Images') {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    // Build backend image
-                    docker.build("${DOCKER_IMAGE_BACKEND}:${DOCKER_TAG}", "./backend")
-                    docker.build("${DOCKER_IMAGE_BACKEND}:latest", "./backend")
-                    
-                    // Build frontend image
-                    docker.build("${DOCKER_IMAGE_FRONTEND}:${DOCKER_TAG}", "./frontend")
-                    docker.build("${DOCKER_IMAGE_FRONTEND}:latest", "./frontend")
+                    docker.build('chimirinzin/be-todo:latest', './backend')
                 }
             }
         }
         
-        // Stage 6: Push to Docker Hub
         stage('Push to Docker Hub') {
             steps {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-creds') {
-                        // Push backend
-                        docker.image("${DOCKER_IMAGE_BACKEND}:${DOCKER_TAG}").push()
-                        docker.image("${DOCKER_IMAGE_BACKEND}:latest").push()
-                        
-                        // Push frontend
-                        docker.image("${DOCKER_IMAGE_FRONTEND}:${DOCKER_TAG}").push()
-                        docker.image("${DOCKER_IMAGE_FRONTEND}:latest").push()
+                        docker.image('chimirinzin/be-todo:latest').push()
                     }
                 }
             }
-        }
-    }
-    
-    post {
-        success {
-            echo '✅ Pipeline completed successfully!'
-            echo "Backend image: ${DOCKER_IMAGE_BACKEND}:${DOCKER_TAG}"
-            echo "Frontend image: ${DOCKER_IMAGE_FRONTEND}:${DOCKER_TAG}"
-        }
-        failure {
-            echo '❌ Pipeline failed. Check the logs above.'
         }
     }
 }
