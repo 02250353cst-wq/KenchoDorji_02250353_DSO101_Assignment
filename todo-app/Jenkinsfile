@@ -5,8 +5,15 @@ pipeline {
         nodejs 'NodeJS-20'
     }
     
+    environment {
+        DOCKER_IMAGE_BACKEND = 'kenchodorji123/todo-backend'
+        DOCKER_IMAGE_FRONTEND = 'kenchodorji123/todo-frontend'
+        DOCKER_TAG = "${BUILD_NUMBER}"
+        NODE_ENV = 'test'
+    }
+    
     stages {
-        stage('Checkout') {
+        stage('📦 Checkout') {
             steps {
                 git branch: 'main',
                     url: 'https://github.com/02250353cst-wq/KenchoDorji_02250353_DSO101_Assignment.git',
@@ -14,34 +21,35 @@ pipeline {
             }
         }
         
-        stage('Install Backend Dependencies') {
+        stage('📥 Backend Install') {
             steps {
                 dir('backend') {
-                    sh 'npm install'
+                    powershell '''
+                        Write-Host "Installing backend dependencies..."
+                        npm install
+                    '''
                 }
             }
         }
         
-        stage('Install Frontend Dependencies') {
+        stage('📥 Frontend Install') {
             steps {
                 dir('frontend') {
-                    sh 'npm install'
+                    powershell '''
+                        Write-Host "Installing frontend dependencies..."
+                        npm install 2>$null
+                    '''
                 }
             }
         }
         
-        stage('Build Frontend') {
-            steps {
-                dir('frontend') {
-                    sh 'npm run build'
-                }
-            }
-        }
-        
-        stage('Test') {
+        stage('🧪 Backend Tests') {
             steps {
                 dir('backend') {
-                    sh 'npm test || true'
+                    powershell '''
+                        Write-Host "Running tests..."
+                        npm test
+                    '''
                 }
             }
             post {
@@ -51,22 +59,49 @@ pipeline {
             }
         }
         
-        stage('Build Docker Image') {
+        stage('🐳 Build Backend Image') {
             steps {
-                script {
-                    docker.build('chimirinzin/be-todo:latest', './backend')
+                dir('backend') {
+                    powershell '''
+                        docker build -t ${env:DOCKER_IMAGE_BACKEND}:${env:DOCKER_TAG} .
+                        docker tag ${env:DOCKER_IMAGE_BACKEND}:${env:DOCKER_TAG} ${env:DOCKER_IMAGE_BACKEND}:latest
+                    '''
                 }
             }
         }
         
-        stage('Push to Docker Hub') {
+        stage('🐳 Build Frontend Image') {
             steps {
-                script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-creds') {
-                        docker.image('chimirinzin/be-todo:latest').push()
-                    }
+                dir('frontend') {
+                    powershell '''
+                        docker build -t ${env:DOCKER_IMAGE_FRONTEND}:${env:DOCKER_TAG} .
+                        docker tag ${env:DOCKER_IMAGE_FRONTEND}:${env:DOCKER_TAG} ${env:DOCKER_IMAGE_FRONTEND}:latest
+                    '''
                 }
             }
+        }
+        
+        stage('📤 Push to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    powershell '''
+                        echo ${env:DOCKER_PASS} | docker login -u ${env:DOCKER_USER} --password-stdin
+                        docker push ${env:DOCKER_IMAGE_BACKEND}:${env:DOCKER_TAG}
+                        docker push ${env:DOCKER_IMAGE_BACKEND}:latest
+                        docker push ${env:DOCKER_IMAGE_FRONTEND}:${env:DOCKER_TAG}
+                        docker push ${env:DOCKER_IMAGE_FRONTEND}:latest
+                    '''
+                }
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo '🎉 Pipeline successful!'
+        }
+        failure {
+            echo '❌ Pipeline failed'
         }
     }
 }
