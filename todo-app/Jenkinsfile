@@ -1,18 +1,19 @@
 pipeline {
     agent any
-    
+
     tools {
         nodejs 'NodeJS-20'
     }
-    
+
     environment {
         DOCKER_IMAGE_BACKEND = 'kenchodorji123/be-todo'
         DOCKER_IMAGE_FRONTEND = 'kenchodorji123/fe-todo'
         DOCKER_TAG = "${BUILD_NUMBER}"
         NODE_ENV = 'test'
     }
-    
+
     stages {
+
         stage('📦 Checkout') {
             steps {
                 git branch: 'main',
@@ -20,7 +21,7 @@ pipeline {
                     credentialsId: 'github-creds'
             }
         }
-        
+
         stage('📥 Backend Install') {
             steps {
                 dir('todo-app/backend') {
@@ -31,85 +32,123 @@ pipeline {
                 }
             }
         }
-        
+
         stage('📥 Frontend Install') {
             steps {
                 dir('todo-app/frontend') {
                     powershell '''
                         Write-Host "Installing frontend dependencies..."
+
                         if (Test-Path "package.json") {
                             npm install
-                        } else {
+                        }
+                        else {
                             Write-Host "No package.json found, skipping..."
                         }
                     '''
                 }
             }
         }
-        
+
         stage('🧪 Backend Tests') {
             steps {
                 dir('todo-app/backend') {
                     powershell '''
-                        Write-Host "Running tests..."
+                        Write-Host "Running backend tests..."
                         npm test
                     '''
                 }
             }
+
             post {
                 always {
                     junit 'todo-app/backend/junit.xml'
                 }
             }
         }
-        
+
         stage('🐳 Build Backend Image') {
             steps {
                 dir('todo-app/backend') {
                     powershell '''
                         Write-Host "Building backend Docker image..."
-                        docker build -t ${env:DOCKER_IMAGE_BACKEND}:${env:DOCKER_TAG} .
-                        docker tag ${env:DOCKER_IMAGE_BACKEND}:${env:DOCKER_TAG} ${env:DOCKER_IMAGE_BACKEND}:latest
+
+                        docker build -t $env:DOCKER_IMAGE_BACKEND:$env:DOCKER_TAG .
+
+                        docker tag `
+                            $env:DOCKER_IMAGE_BACKEND:$env:DOCKER_TAG `
+                            $env:DOCKER_IMAGE_BACKEND:latest
                     '''
                 }
             }
         }
-        
+
         stage('🐳 Build Frontend Image') {
             steps {
                 dir('todo-app/frontend') {
                     powershell '''
                         Write-Host "Building frontend Docker image..."
-                        docker build -t ${env:DOCKER_IMAGE_FRONTEND}:${env:DOCKER_TAG} .
-                        docker tag ${env:DOCKER_IMAGE_FRONTEND}:${env:DOCKER_TAG} ${env:DOCKER_IMAGE_FRONTEND}:latest
+
+                        docker build -t $env:DOCKER_IMAGE_FRONTEND:$env:DOCKER_TAG .
+
+                        docker tag `
+                            $env:DOCKER_IMAGE_FRONTEND:$env:DOCKER_TAG `
+                            $env:DOCKER_IMAGE_FRONTEND:latest
                     '''
                 }
             }
         }
-        
+
         stage('📤 Push to Docker Hub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'docker-hub-creds',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )
+                ]) {
+
                     powershell '''
-                        Write-Host "Pushing images to Docker Hub..."
-                        echo ${env:DOCKER_PASS} | docker login -u ${env:DOCKER_USER} --password-stdin
-                        docker push ${env:DOCKER_IMAGE_BACKEND}:${env:DOCKER_TAG}
-                        docker push ${env:DOCKER_IMAGE_BACKEND}:latest
-                        docker push ${env:DOCKER_IMAGE_FRONTEND}:${env:DOCKER_TAG}
-                        docker push ${env:DOCKER_IMAGE_FRONTEND}:latest
-                        Write-Host "All images pushed successfully!"
+                        Write-Host "Logging into Docker Hub..."
+
+                        $env:DOCKER_PASS | docker login `
+                            -u $env:DOCKER_USER `
+                            --password-stdin
+
+                        Write-Host "Pushing backend images..."
+
+                        docker push $env:DOCKER_IMAGE_BACKEND:$env:DOCKER_TAG
+                        docker push $env:DOCKER_IMAGE_BACKEND:latest
+
+                        Write-Host "Pushing frontend images..."
+
+                        docker push $env:DOCKER_IMAGE_FRONTEND:$env:DOCKER_TAG
+                        docker push $env:DOCKER_IMAGE_FRONTEND:latest
+
+                        Write-Host "Logging out from Docker Hub..."
+                        docker logout
+
+                        Write-Host "All Docker images pushed successfully!"
                     '''
                 }
             }
         }
     }
-    
+
     post {
+
         success {
-            echo '🎉 Pipeline successful!'
+            echo '🎉 Pipeline completed successfully!'
         }
+
         failure {
-            echo '❌ Pipeline failed'
+            echo '❌ Pipeline failed!'
+        }
+
+        always {
+            cleanWs()
         }
     }
 }
