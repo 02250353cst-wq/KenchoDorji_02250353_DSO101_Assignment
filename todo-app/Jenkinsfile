@@ -17,13 +17,13 @@ pipeline {
             steps {
                 git branch: 'main',
                     url: 'https://github.com/02250353cst-wq/KenchoDorji_02250353_DSO101_Assignment.git',
-                    credentialsId: 'github-credentials'
+                    credentialsId: 'github-credits'  // Fixed here
             }
         }
         
         stage('📥 Backend Install') {
             steps {
-                dir('backend') {
+                dir('todo-app/backend') {
                     powershell '''
                         Write-Host "Installing backend dependencies..."
                         npm install
@@ -34,10 +34,14 @@ pipeline {
         
         stage('📥 Frontend Install') {
             steps {
-                dir('frontend') {
+                dir('todo-app/frontend') {
                     powershell '''
                         Write-Host "Installing frontend dependencies..."
-                        npm install 2>$null
+                        if (Test-Path "package.json") {
+                            npm install
+                        } else {
+                            Write-Host "No package.json found, skipping..."
+                        }
                     '''
                 }
             }
@@ -45,7 +49,7 @@ pipeline {
         
         stage('🧪 Backend Tests') {
             steps {
-                dir('backend') {
+                dir('todo-app/backend') {
                     powershell '''
                         Write-Host "Running tests..."
                         npm test
@@ -54,14 +58,14 @@ pipeline {
             }
             post {
                 always {
-                    junit 'backend/junit.xml'
+                    junit 'todo-app/backend/junit.xml'
                 }
             }
         }
         
         stage('🐳 Build Backend Image') {
             steps {
-                dir('backend') {
+                dir('todo-app/backend') {
                     powershell '''
                         docker build -t ${env:DOCKER_IMAGE_BACKEND}:${env:DOCKER_TAG} .
                         docker tag ${env:DOCKER_IMAGE_BACKEND}:${env:DOCKER_TAG} ${env:DOCKER_IMAGE_BACKEND}:latest
@@ -72,7 +76,7 @@ pipeline {
         
         stage('🐳 Build Frontend Image') {
             steps {
-                dir('frontend') {
+                dir('todo-app/frontend') {
                     powershell '''
                         docker build -t ${env:DOCKER_IMAGE_FRONTEND}:${env:DOCKER_TAG} .
                         docker tag ${env:DOCKER_IMAGE_FRONTEND}:${env:DOCKER_TAG} ${env:DOCKER_IMAGE_FRONTEND}:latest
