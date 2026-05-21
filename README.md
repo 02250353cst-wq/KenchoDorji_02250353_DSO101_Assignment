@@ -220,8 +220,110 @@ Render automatically rebuild and redeploy both services!
 
 ##### -------------------------------------------------------------------------------------------- #####
 
+# # Todo App CI/CD Pipeline with Jenkins-DSO101 Assignment 2
+
+## Project Overview
+
+This project implements a complete **Continuous Integration and Continuous Deployment (CI/CD)** pipeline for a full-stack Todo application using Jenkins. The pipeline automates the process of code checkout, dependency installation, testing, Docker image building, and pushing to Docker Hub.
+
+##  Technologies Used
+
+| Technology | Purpose |
+|------------|---------|
+| **Jenkins** | CI/CD automation server |
+| **GitHub** | Source code hosting |
+| **Node.js** | Backend JavaScript runtime |
+| **Express.js** | Backend web framework |
+| **Jest & Supertest** | Unit testing framework |
+| **Docker** | Containerization |
+| **Nginx** | Frontend web server |
+| **Docker Hub** | Container registry |
+
+## Project Structure
+todo-app/
+├── backend/                    
+│ ├── tests/
+│ │ └── app.test.js
+│ ├── server.js
+│ ├── package.json
+│ └── Dockerfile
+├── frontend/
+│ ├── index.html
+│ ├── nginx.conf
+│ ├── package.json
+│ └── Dockerfile
+├── Jenkinsfile
+└── README.md
+
+
+## Pipeline Stages
+
+The Jenkins pipeline consists of 7 automated stages:
+
+| Stage | Description | Status |
+|-------|-------------|--------|
+| **Checkout** | Pulls latest code from GitHub repository |
+| **Backend Install** | Installs Node.js dependencies for backend |
+| **Frontend Install** | Installs Node.js dependencies for frontend | 
+| **Backend Tests** | Runs 10 unit tests using Jest | 
+| **Build Backend Image** | Creates Docker image for backend service | 
+| **Build Frontend Image** | Creates Docker image for frontend service | 
+| **Push to Docker Hub** | Uploads images to Docker Hub registry | 
+
+##  Setup Instructions
+
+### Prerequisites
+- Jenkins installed locally (http://localhost:8082)
+- Docker Desktop installed and running
+- Node.js (v24.14.0)
+- Git installed
+
+**Step 1**: Configure Jenkins
+Access Jenkins at http://localhost:8080
+Install required plugins:
+NodeJS Plugin
+Docker Pipeline
+JUnit Plugin
+GitHub Integration
+
+Configure Node.js:
+
+Manage Jenkins → Tools → NodeJS → Add NodeJS-20
+
+**Add GitHub Credentials:**
+Kind: Username with password
+Username: 02250353cst-wq
+Password: (GitHub Personal Access Token)
+ID: github-creds
+![alt text](<Screenshot 2026-05-21 002039.png>)
+
+**Add Docker Hub Credentials:**
+Username: kenchodorji123
+Password: (Docker Hub Personal Access Token)
+ID: docker-hub-creds
+![alt text](<Screenshot 2026-05-21 004007.png>)
+![alt text](<Screenshot 2026-05-21 012450.png>)
+
+**Step 2:** Create Jenkins Pipeline
+New Item → Pipeline → Name: todo-app-cicd
+Pipeline Definition: Pipeline script from SCM
+SCM: Git
+Repository URL: Your GitHub repository URL
+Credentials: github-creds
+Script Path: todoap/Jenkinsfile
+Save and Build Now
+![alt text](<Screenshot 2026-05-21 014635.png>)
+
+**Docker Images**
+The pipeline builds and pushes the following Docker images:
+
+Service   |	Docker Hub Repository  | Port
+Backend   |	kenchodorji123/be-todo | 5000
+Frontend  |	kenchodorji123/fe-todo | 80
+
+##### -------------------------------------------------------------------------------------------- #####
 # TodoFlow — DSO101 Assignment 3
-**Course:** DSO101 — Continuous Integration and Continuous Deployment
+**Mdule:** DSO101 — Continuous Integration and Continuous Deployment
 
 ---
 
